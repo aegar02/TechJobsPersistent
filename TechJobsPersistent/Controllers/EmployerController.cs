@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TechJobsPersistent.Data;
 using TechJobsPersistent.Models;
 using TechJobsPersistent.ViewModels;
@@ -13,26 +14,21 @@ namespace TechJobsPersistent.Controllers
 {
     public class EmployerController : Controller
     {
-
         private JobDbContext _context;
 
         public EmployerController(JobDbContext dbContext)
         {
-            _context = dbContext;
-
+            this._context = dbContext;
         }
-
 
         // GET: /<controller>/
         public IActionResult Index()
         {
-
             List<Employer> employers = _context.Employers.ToList();
 
             return View(employers);
         }
 
-        [HttpGet]
         public IActionResult Add()
         {
             AddEmployerViewModel addEmployerViewModel = new AddEmployerViewModel();
@@ -40,14 +36,14 @@ namespace TechJobsPersistent.Controllers
             return View(addEmployerViewModel);
         }
 
-        [HttpPost]
         public IActionResult ProcessAddEmployerForm(AddEmployerViewModel addEmployerViewModel)
         {
             if (ModelState.IsValid)
             {
-                Employer newEmployer = new Employer
+                Employer newEmployer = new Employer()
                 {
-                    Name = addEmployerViewModel.Name
+                    Name = addEmployerViewModel.Name,
+                    Location = addEmployerViewModel.Location
                 };
 
                 _context.Employers.Add(newEmployer);
@@ -56,12 +52,14 @@ namespace TechJobsPersistent.Controllers
                 return Redirect("/Employer");
             }
 
-            return View("Add", addEmployerViewModel);
+            return View(addEmployerViewModel);
         }
 
         public IActionResult About(int id)
         {
-            return View();
+            Employer employer = _context.Employers.Find(id);
+
+            return View(employer);
         }
     }
 }

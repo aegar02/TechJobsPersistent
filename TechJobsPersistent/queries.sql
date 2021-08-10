@@ -1,8 +1,7 @@
 --Part 1
-Jobs table:
-    int Id,
-    longtext Name,
-    int EmployerId
+Jobs.Id int
+Jobs.Name longtext
+Jobs.EmployerId int
 
 --Part 2
 

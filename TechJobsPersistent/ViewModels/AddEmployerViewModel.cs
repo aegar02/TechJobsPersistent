@@ -5,12 +5,12 @@ namespace TechJobsPersistent.ViewModels
 {
     public class AddEmployerViewModel
     {
-        [Required(ErrorMessage = "Name is required!")]
-        [StringLength(20, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 20 characters long")]
+        [Required(ErrorMessage = "Name is required for every Employer")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "Please enter only 1 location!")]
-        [StringLength(20, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 20 characters long")]
+        [Required(ErrorMessage = "A Location is required for every Employer!")]
         public string Location { get; set; }
+
+        public AddEmployerViewModel() { }
     }
 }
