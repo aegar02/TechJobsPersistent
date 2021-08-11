@@ -15,16 +15,16 @@ namespace TechJobsPersistent.Controllers
 {
     public class HomeController : Controller
     {
-        private JobDbContext _context;
+        private JobDbContext context;
 
         public HomeController(JobDbContext dbContext)
         {
-            _context = dbContext;
+            context = dbContext;
         }
 
         public IActionResult Index()
         {
-            List<Job> jobs = _context.Jobs.Include(j => j.Employer).ToList();
+            List<Job> jobs = context.Jobs.Include(j => j.Employer).ToList();
 
             return View(jobs);
         }
@@ -32,17 +32,19 @@ namespace TechJobsPersistent.Controllers
         [HttpGet("/Add")]
         public IActionResult AddJob()
         {
-            List<Employer> employers = _context.Employers.ToList();
-            List<Skill> skills = _context.Skills.ToList();
+            List<Employer> employers = context.Employers.ToList();
+            List<Skill> skills = context.Skills.ToList();
 
-            AddJobViewModel addJobViewModel = new AddJobViewModel(employers, skills);
+            AddJobViewModel job = new AddJobViewModel(employers, skills);
 
-            return View();
+            return View(job);
         }
 
+        [HttpPost]
         public IActionResult ProcessAddJobForm(AddJobViewModel addJobViewModel, string[] selectedSkills)
         {
-            Employer theEmployer = _context.Employers.Find(addJobViewModel.EmployerId);
+            Employer theEmployer = context.Employers.Find(addJobViewModel.EmployerId);
+
 
             if (ModelState.IsValid)
             {
@@ -53,7 +55,7 @@ namespace TechJobsPersistent.Controllers
                     Employer = theEmployer
                 };
 
-                foreach (string skill in selectedSkills)
+                foreach (var skill in selectedSkills)
                 {
                     JobSkill newJobSkill = new JobSkill
                     {
@@ -62,12 +64,11 @@ namespace TechJobsPersistent.Controllers
                         SkillId = Int32.Parse(skill)
                     };
 
-                    _context.JobSkills.Add(newJobSkill);
-
+                    context.JobSkills.Add(newJobSkill);
                 }
 
-                _context.Jobs.Add(newJob);
-                _context.SaveChanges();
+                context.Jobs.Add(newJob);
+                context.SaveChanges();
 
                 return Redirect("Index");
             }
@@ -75,14 +76,13 @@ namespace TechJobsPersistent.Controllers
             return View(addJobViewModel);
         }
 
-
         public IActionResult Detail(int id)
         {
-            Job theJob = _context.Jobs
+            Job theJob = context.Jobs
                 .Include(j => j.Employer)
                 .Single(j => j.Id == id);
 
-            List<JobSkill> jobSkills = _context.JobSkills
+            List<JobSkill> jobSkills = context.JobSkills
                 .Where(js => js.JobId == id)
                 .Include(js => js.Skill)
                 .ToList();

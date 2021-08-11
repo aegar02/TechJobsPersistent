@@ -18,7 +18,7 @@ namespace TechJobsPersistent.Controllers
 
         public EmployerController(JobDbContext dbContext)
         {
-            this._context = dbContext;
+            _context = dbContext;
         }
 
         // GET: /<controller>/
@@ -31,16 +31,17 @@ namespace TechJobsPersistent.Controllers
 
         public IActionResult Add()
         {
-            AddEmployerViewModel addEmployerViewModel = new AddEmployerViewModel();
+            AddEmployerViewModel employer = new AddEmployerViewModel();
 
-            return View(addEmployerViewModel);
+            return View(employer);
         }
 
-        public IActionResult ProcessAddEmployerForm(AddEmployerViewModel addEmployerViewModel)
+        [HttpPost]
+        public IActionResult Add(AddEmployerViewModel addEmployerViewModel)
         {
             if (ModelState.IsValid)
             {
-                Employer newEmployer = new Employer()
+                Employer newEmployer = new Employer
                 {
                     Name = addEmployerViewModel.Name,
                     Location = addEmployerViewModel.Location
@@ -49,7 +50,7 @@ namespace TechJobsPersistent.Controllers
                 _context.Employers.Add(newEmployer);
                 _context.SaveChanges();
 
-                return Redirect("/Employer");
+                return Redirect("/Employer/");
             }
 
             return View(addEmployerViewModel);
